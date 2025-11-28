@@ -1,4 +1,4 @@
-console.log("🔥 RUNNING CORRECT SERVER FILE!");
+﻿console.log("🔥 RUNNING CORRECT SERVER FILE!");
 
 const express = require("express");
 const http = require("http");
@@ -13,14 +13,23 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 /****************************************************
- * ⭐⭐⭐ TWILIO SETUP — INSERTED HERE ⭐⭐⭐
+ * ⭐⭐⭐ TWILIO SETUP — from environment variables ⭐⭐⭐
  ****************************************************/
 const twilio = require("twilio");
 
-// ⚠️ INSERT YOUR REAL TWILIO VALUES
-const TWILIO_ACCOUNT_SID = "YOUR_ACCOUNT_SID_HERE";
-const TWILIO_AUTH_TOKEN = "YOUR_AUTH_TOKEN_HERE";
-const TWILIO_PHONE_NUMBER = "+18885748641"; // Your Twilio phone #
+// Read Twilio values from environment variables (Render sets these)
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER; // e.g. +13053631648
+
+// Public URL Twilio should call back (must be HTTPS in production)
+const BASE_URL = process.env.BASE_URL || "https://twilio-voice.onrender.com";
+
+if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
+  console.warn(
+    "⚠️ WARNING: Twilio env vars missing. Make sure TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_PHONE_NUMBER are set."
+  );
+}
 
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 /****************************************************/
@@ -335,9 +344,9 @@ app.post("/start-phone", async (req, res) => {
       from: TWILIO_PHONE_NUMBER,
       to: userPhone,
 
-      // ⬇⬇⬇ INSERTED HERE (The fix)
-      url: `https://YOUR_DOMAIN.com/twilio/voice-handler?advisorId=${advisorId}`,
-      // ⬆⬆⬆ INSERTED HERE
+      // ⬇⬇⬇ use the BASE_URL env var so Twilio can reach your voice handler
+      url: `${BASE_URL}/twilio/voice-handler?advisorId=${advisorId}`,
+      // ⬆⬆⬆
     });
   } catch (err) {
     console.error("Twilio Error:", err);
@@ -528,7 +537,5 @@ app.get("/admin-earnings", serveAdminPage("admin-earnings.html"));
 /***********************************
  * START SERVER
  ***********************************/
-const PORT = 3000;
-server.listen(PORT, () =>
-  console.log(`🚀 Server running at http://localhost:${PORT}`)
-);
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
