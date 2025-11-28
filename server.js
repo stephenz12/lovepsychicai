@@ -37,10 +37,12 @@ if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
   );
 }
 
-
 // EARLY DEBUG — safe: print presence & prefix BEFORE Twilio client construction
 console.log("EARLY DEBUG - TWILIO_ACCOUNT_SID present:", !!TWILIO_ACCOUNT_SID);
-console.log("EARLY DEBUG - TWILIO_ACCOUNT_SID prefix:", TWILIO_ACCOUNT_SID ? TWILIO_ACCOUNT_SID.slice(0,2) : "(none)");
+console.log(
+  "EARLY DEBUG - TWILIO_ACCOUNT_SID prefix:",
+  TWILIO_ACCOUNT_SID ? TWILIO_ACCOUNT_SID.slice(0, 2) : "(none)"
+);
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 /****************************************************/
 
@@ -360,7 +362,13 @@ app.post("/start-phone", async (req, res) => {
     });
   } catch (err) {
     console.error("Twilio Error:", err);
-    return res.status(500).json({ error: "Twilio call failed" });
+    const detail =
+      err && err.message
+        ? err.message
+        : err && err.toString
+        ? err.toString()
+        : JSON.stringify(err);
+    return res.status(500).json({ error: "Twilio call failed", detail });
   }
 
   advisor.inPhoneSession = true;
@@ -528,7 +536,7 @@ function serveAdminPage(f) {
   return (req, res) => {
     const h = req.headers.authorization || "";
     const token = h.split(" ")[1];
-    if (!token) return res.redirect("/login.html");
+    if (!token) return res.status(401).json({ error: "No token" });
 
     const sessions = readJSON(authSessionsFile);
     const s = sessions.find((x) => x.token === token);
@@ -549,4 +557,3 @@ app.get("/admin-earnings", serveAdminPage("admin-earnings.html"));
  ***********************************/
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-
