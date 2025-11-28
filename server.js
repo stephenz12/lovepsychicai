@@ -37,6 +37,10 @@ if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
   );
 }
 
+
+// EARLY DEBUG — safe: print presence & prefix BEFORE Twilio client construction
+console.log("EARLY DEBUG - TWILIO_ACCOUNT_SID present:", !!TWILIO_ACCOUNT_SID);
+console.log("EARLY DEBUG - TWILIO_ACCOUNT_SID prefix:", TWILIO_ACCOUNT_SID ? TWILIO_ACCOUNT_SID.slice(0,2) : "(none)");
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 /****************************************************/
 
@@ -545,3 +549,4 @@ app.get("/admin-earnings", serveAdminPage("admin-earnings.html"));
  ***********************************/
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
