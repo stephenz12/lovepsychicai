@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Add Credits - Admin</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="admin-body">
+    <!-- ADMIN NAVIGATION BAR -->
+    <nav class="admin-nav">
+      <a href="admin-users.html">Users</a>
+      <a href="admin-sessions.html">Sessions</a>
+      <a href="admin-earnings.html">Earnings</a>
+      <a href="add-credits.html">Add Credits</a>
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+    </nav>
+
+    <div class="admin-container">
+      <h2 class="title">Add Credits to User</h2>
+
+      <!-- USER ID INPUT -->
+      <label>User ID (email)</label>
+      <input id="userIdInput" type="text" placeholder="Enter user email..." />
+
+      <!-- AMOUNT INPUT -->
+      <label>Amount of Credits to Add ($)</label>
+      <input id="amountInput" type="number" step="0.01" placeholder="e.g. 10" />
+
+      <!-- SUBMIT BUTTON -->
+      <button id="addCreditsBtn">Add Credits</button>
+
+      <!-- CONFIRMATION MESSAGE -->
+      <p id="resultMessage" style="margin-top: 15px; font-size: 16px"></p>
+    </div>
+
+    <script src="add-credits.js"></script>
+    <script src="logout.js"></script>
+  </body>
+</html>

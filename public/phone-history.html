@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Phone Reading History</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      .history-container {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .history-item {
+        border-bottom: 1px solid #ddd;
+        padding: 12px 0;
+      }
+      .history-item:last-child {
+        border-bottom: none;
+      }
+      .cost {
+        font-weight: bold;
+        color: #3a6;
+      }
+      .time {
+        color: #777;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="history-container">
+      <h2>Your Phone Reading History</h2>
+      <div id="historyList">Loading...</div>
+    </div>
+
+    <script src="phone-history.js"></script>
+  </body>
+</html>

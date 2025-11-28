@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Advisor Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+      }
+
+      .section {
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.06);
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        border: none;
+        background: #567bfb;
+        color: white;
+      }
+
+      .btn:hover {
+        background: #3e5fd6;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Advisor Dashboard</h1>
+
+    <p id="advisorEmail">Loading advisor...</p>
+
+    <!-- AVAILABILITY CONTROLS -->
+    <div class="section">
+      <h2>Your Availability</h2>
+
+      <p>Chat Status: <strong id="advisorChatStatusText">Loading...</strong></p>
+      <p>
+        Phone Status: <strong id="advisorPhoneStatusText">Loading...</strong>
+      </p>
+
+      <div style="margin-top: 15px">
+        <h3>Chat Availability</h3>
+        <button class="btn" id="advisorGoOnlineChat">Go Online for Chat</button>
+        <button class="btn" id="advisorGoOfflineChat">
+          Go Offline for Chat
+        </button>
+      </div>
+
+      <div style="margin-top: 20px">
+        <h3>Phone Availability</h3>
+        <button class="btn" id="advisorGoOnlinePhone">
+          Go Online for Phone
+        </button>
+        <button class="btn" id="advisorGoOfflinePhone">
+          Go Offline for Phone
+        </button>
+      </div>
+    </div>
+
+    <!-- ⭐ ADVISOR PHONE NUMBER SETUP -->
+    <div class="section">
+      <h2>Your Phone Number</h2>
+
+      <p>
+        This is the number Twilio will call when a customer starts a phone
+        reading.
+      </p>
+
+      <label><strong>Phone Number:</strong></label>
+      <input
+        type="text"
+        id="advisorPhoneNumber"
+        placeholder="+15551234567"
+        style="padding: 8px; width: 250px; font-size: 14px; margin-right: 10px"
+      />
+
+      <button class="btn" id="savePhoneNumberBtn">Save Number</button>
+
+      <p id="savePhoneStatus" style="color: green; margin-top: 10px"></p>
+    </div>
+
+    <!-- ACTIVE SESSIONS -->
+    <div class="section">
+      <h2>Active Chat Sessions</h2>
+      <div id="activeSessions"></div>
+    </div>
+
+    <!-- CHAT CONTROLS -->
+    <div class="section">
+      <h2>Chat Controls</h2>
+      <button class="btn" onclick="openChatWindow()">Open Chat Window</button>
+    </div>
+
+    <!-- PHONE EARNINGS SECTION -->
+    <div class="section">
+      <h2>Phone Reading Earnings</h2>
+
+      <button class="btn" id="downloadPhoneCSV">Download CSV</button>
+
+      <div style="margin-top: 10px; margin-bottom: 10px">
+        <label><strong>Show:</strong></label>
+        <select id="phoneFilterRange">
+          <option value="all">All time</option>
+          <option value="today">Today</option>
+          <option value="week">Last 7 days</option>
+          <option value="month">This month</option>
+        </select>
+      </div>
+
+      <p>Total Phone Minutes: <strong id="phoneMinutes">0</strong></p>
+      <p>Total Phone Earnings: <strong id="phoneMoney">$0.00</strong></p>
+
+      <h3 style="margin-top: 15px">Recent Phone Readings</h3>
+      <div id="phoneEarningsList">Loading...</div>
+
+      <h3 style="margin-top: 25px">Earnings Chart (Last 7 Days)</h3>
+      <canvas id="phoneEarningsChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- ⭐ TOTAL COMBINED EARNINGS -->
+    <div class="section">
+      <h2>Total Earnings (Chat + Phone)</h2>
+
+      <p>Total Chat Earnings: <strong id="totalChatEarnings">$0.00</strong></p>
+      <p>
+        Total Phone Earnings: <strong id="totalPhoneEarnings">$0.00</strong>
+      </p>
+
+      <hr />
+
+      <p>
+        <strong>Grand Total Earnings:</strong>
+        <span style="font-size: 20px; color: green" id="grandTotalEarnings"
+          >$0.00</span
+        >
+      </p>
+    </div>
+
+    <!-- FULL EARNINGS REPORT LINK -->
+    <div class="section">
+      <h2>Full Earnings Reports</h2>
+      <button
+        class="btn"
+        onclick="window.location.href='advisor-earnings.html'"
+      >
+        View Full Earnings History
+      </button>
+    </div>
+
+    <!-- DAILY/WEEKLY/MONTHLY SUMMARY -->
+    <div class="section">
+      <h2>Earnings Summary</h2>
+
+      <p>Today: <strong id="earnToday">$0.00</strong></p>
+      <p>This Week: <strong id="earnWeek">$0.00</strong></p>
+      <p>This Month: <strong id="earnMonth">$0.00</strong></p>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- ⭐⭐⭐ NEW JS FOR STEP 4: SAVE PHONE NUMBER ⭐⭐⭐ -->
+    <script>
+      document.getElementById("savePhoneNumberBtn").onclick = async () => {
+        const phone = document
+          .getElementById("advisorPhoneNumber")
+          .value.trim();
+        const email = localStorage.getItem("advisorEmail");
+        if (!email) return alert("Advisor email missing.");
+
+        if (!phone.startsWith("+"))
+          return alert(
+            "Phone number must be in E.164 format (ex: +15551234567)"
+          );
+
+        const res = await fetch("/save-advisor-phone", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ advisorId: email, phone }),
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById("savePhoneStatus").textContent =
+            "Phone number saved!";
+        }
+      };
+    </script>
+
+    <script src="advisor-dashboard.js"></script>
+  </body>
+</html>

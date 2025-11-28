@@ -1,0 +1,446 @@
+/* ========== GLOBAL STYLES ========== */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: radial-gradient(
+    circle at top,
+    #3b0b63 0,
+    #090016 50%,
+    #050309 100%
+  );
+  color: #f9f5ff;
+  margin: 0;
+  padding: 0;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 32px;
+  letter-spacing: 1px;
+  color: #fdf2ff;
+}
+
+/* ========== HOME PAGE STYLES (Psychic Cards) ========== */
+
+.advisor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.advisor-card {
+  background: rgba(20, 6, 38, 0.95);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(214, 144, 255, 0.25);
+}
+
+.advisor-header {
+  display: flex;
+  gap: 14px;
+}
+
+.photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f2c6ff;
+}
+
+.desc {
+  margin: 4px 0 8px;
+  font-size: 13px;
+  color: #dac8ff;
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stars {
+  color: #ffd86b;
+  font-size: 16px;
+}
+
+.rating-number {
+  font-size: 12px;
+  color: #e7ddff;
+}
+
+.advisor-actions {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.call-btn,
+.chat-btn,
+.view-profile-btn,
+.see-reviews-btn {
+  flex: 1 1 45%;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: none;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.call-btn {
+  background: #00c26a;
+  color: white;
+}
+
+.chat-btn {
+  background: #1da1f2;
+  color: white;
+}
+
+.view-profile-btn {
+  background: #7f3bf5;
+  color: #fff;
+}
+
+.see-reviews-btn {
+  background: #2b1b52;
+  color: #ebe6ff;
+  border: 1px solid #7f3bf5;
+}
+
+/* ========== REVIEWS ON HOME PAGE ========== */
+
+.reviews {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.review-card {
+  background: rgba(12, 4, 28, 0.95);
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(190, 129, 255, 0.3);
+  margin-bottom: 8px;
+}
+
+.review-card .rating-inline {
+  color: #ffd86b;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.review-name {
+  font-size: 12px;
+  color: #e0d4ff;
+  margin-top: 4px;
+}
+
+.rebuttal {
+  margin-top: 6px;
+  padding: 6px;
+  background: rgba(64, 35, 120, 0.8);
+  border-left: 3px solid #c8a3ff;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ========== MODAL ========== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 0, 15, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: #140623;
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7);
+  border: 1px solid #8a46ff;
+}
+
+.modal-close {
+  float: right;
+  cursor: pointer;
+  font-size: 22px;
+  color: #f5e9ff;
+}
+
+/* ========== ADMIN DASHBOARD ========== */
+
+.admin-body {
+  background: radial-gradient(
+    circle at top,
+    #3b0b63 0,
+    #090016 50%,
+    #050309 100%
+  );
+  color: #f9f5ff;
+  margin: 0;
+  padding: 0; /* IMPORTANT FIX */
+}
+
+.admin-container {
+  max-width: 800px;
+  margin: 40px auto;
+  background: rgba(20, 6, 38, 0.96);
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px solid rgba(214, 144, 255, 0.3);
+  box-shadow: 0 18px 35px rgba(0, 0, 0, 0.6);
+}
+
+.admin-container input,
+.admin-container textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid #7f3bf5;
+  margin: 4px 0 10px;
+  background: #0b0417;
+  color: #f9f5ff;
+}
+
+.admin-container button {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: none;
+  background: #8a46ff;
+  color: white;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ============================
+   ADMIN NAVIGATION BAR
+============================ */
+.admin-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  background: rgba(20, 6, 38, 0.96); /* FIXED */
+  padding: 14px 22px;
+  border-bottom: 2px solid #7f3bf5;
+  border-radius: 0 0 12px 12px; /* FIXED */
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 10; /* FIXED */
+}
+
+.admin-nav a {
+  color: #e8d8ff;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.admin-nav a:hover {
+  background: #7f3bf5;
+  color: white;
+}
+
+/* Single, clean logout button */
+.logout-btn {
+  margin-left: auto;
+  background: #ff4b8a;
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 999px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #ff2a6f;
+}
+
+/* ========== LIVE CHAT PAGE ========== */
+
+.chat-body {
+  background: radial-gradient(
+    circle at top,
+    #3b0b63 0,
+    #090016 50%,
+    #050309 100%
+  );
+  color: #fff;
+  padding: 20px;
+  margin: 0;
+}
+
+.chat-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: rgba(20, 6, 38, 0.96);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid #8a46ff;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-timer {
+  margin-left: auto;
+  font-size: 16px;
+  background: #1d0f39;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #8a46ff;
+  color: #ffd86b;
+  font-weight: bold;
+}
+
+.chat-window {
+  flex: 1;
+  overflow-y: auto;
+  background: #0b0417;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #7f3bf5;
+  margin-top: 12px;
+}
+
+.chat-message {
+  margin-bottom: 12px;
+}
+
+.chat-meta {
+  font-size: 11px;
+  color: #cabfff;
+  margin-bottom: 3px;
+}
+
+.chat-text {
+  background: #1d0f39;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.chat-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.chat-form input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 999px;
+  border: 1px solid #8a46ff;
+  background: #0b0417;
+  color: #fff;
+}
+
+.chat-form button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #8a46ff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* Billing cost display */
+.chat-cost {
+  background: #2e184d;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #8a46ff;
+  color: #86ffea;
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+/* Wallet credits */
+.chat-credits {
+  background: #1d0f39;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #8a46ff;
+  color: #ffd86b;
+  font-weight: bold;
+  margin-left: 10px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.admin-email {
+  margin-left: auto;
+  margin-right: 15px;
+  color: #cfc0ff;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0.9;
+}
+.qr-category {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  margin-bottom: 6px;
+  border-radius: 6px;
+}
+
+.qr-header {
+  padding: 8px 10px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+.qr-list {
+  padding: 8px;
+  display: block;
+}
+
+.quick-btn {
+  display: inline-block;
+  margin: 4px;
+  padding: 6px 10px;
+  background: #eee;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.quick-btn:hover {
+  background: #e0e0e0;
+}

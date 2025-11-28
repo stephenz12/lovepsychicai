@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f0f5;
+        padding: 20px;
+      }
+
+      h1 {
+        margin-bottom: 15px;
+      }
+
+      .section {
+        background: white;
+        padding: 18px;
+        border-radius: 8px;
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        padding: 10px 16px;
+        border-radius: 6px;
+        border: none;
+        background: #567bfb;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+        margin: 5px 0;
+        display: block;
+      }
+
+      .btn:hover {
+        background: #3e5fd6;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Admin Dashboard</h1>
+
+    <div class="section">
+      <h2>Admin Tools</h2>
+
+      <button class="btn" onclick="window.location.href='admin-users.html'">
+        View Users
+      </button>
+
+      <button class="btn" onclick="window.location.href='admin-sessions.html'">
+        View Chat Sessions
+      </button>
+
+      <button class="btn" onclick="window.location.href='admin-earnings.html'">
+        Advisor Earnings
+      </button>
+
+      <!-- ⭐ NEW: Payout Manager -->
+      <button class="btn" onclick="window.location.href='admin-payouts.html'">
+        Manage Payout Requests
+      </button>
+    </div>
+
+    <button class="btn" onclick="window.location.href='login.html'">
+      Logout
+    </button>
+  </body>
+</html>

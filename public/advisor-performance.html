@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Advisor Performance Analytics</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      body {
+        background: #f5f5f5;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+      }
+
+      .section {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .metric-box {
+        display: inline-block;
+        background: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        width: 200px;
+        margin: 10px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      .metric-title {
+        font-weight: bold;
+        color: #666;
+      }
+
+      .metric-value {
+        font-size: 24px;
+        margin-top: 5px;
+        color: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Advisor Performance Dashboard</h1>
+    <button class="btn" onclick="window.location.href='advisor-dashboard.html'">
+      ← Back
+    </button>
+
+    <!-- SUMMARY METRICS -->
+    <div class="section">
+      <h2>Your Statistics</h2>
+
+      <div id="metricsContainer">Loading metrics...</div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="section">
+      <h2>Readings Per Day (Last 30 Days)</h2>
+      <canvas id="readingsChart" width="400" height="150"></canvas>
+    </div>
+
+    <div class="section">
+      <h2>Earnings Per Day (Last 30 Days)</h2>
+      <canvas id="earningsChart" width="400" height="150"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="advisor-performance.js"></script>
+  </body>
+</html>

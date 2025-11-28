@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin – Payout Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f0f0f5;
+        padding: 20px;
+      }
+      h1 {
+        margin-bottom: 15px;
+      }
+      .btn {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: #567bfb;
+        color: white;
+        font-size: 14px;
+      }
+      .btn:hover {
+        background: #3e5fd6;
+      }
+      .section {
+        background: white;
+        padding: 18px;
+        border-radius: 8px;
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+      }
+      .payout-row {
+        border-bottom: 1px solid #ddd;
+        padding: 12px 0;
+      }
+      .payout-row:last-child {
+        border-bottom: none;
+      }
+      .status {
+        font-weight: bold;
+      }
+      .pending {
+        color: orange;
+      }
+      .approved {
+        color: blue;
+      }
+      .completed {
+        color: green;
+      }
+      select,
+      input {
+        padding: 6px;
+        font-size: 14px;
+      }
+
+      /* ⭐ HIGHLIGHT STYLE */
+      .highlight {
+        background: yellow;
+        font-weight: bold;
+        padding: 0 2px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Admin: Payout Manager</h1>
+
+    <button class="btn" onclick="window.location.href='admin.html'">
+      ← Back to Admin Dashboard
+    </button>
+
+    <div class="section">
+      <h2>Filter Payout Requests</h2>
+
+      <!-- STATUS FILTER -->
+      <label><strong>Status:</strong></label>
+      <select id="filterStatus" onchange="loadPayouts()">
+        <option value="all">All</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="completed">Completed</option>
+      </select>
+
+      <!-- LIVE ADVISOR SEARCH -->
+      <div style="margin-top: 15px">
+        <label><strong>Advisor ID:</strong></label>
+        <input
+          type="text"
+          id="searchAdvisor"
+          placeholder="Enter advisor ID..."
+          style="width: 250px"
+          onkeyup="loadPayouts()"
+        />
+      </div>
+
+      <!-- ⭐ NEW DATE RANGE FILTER -->
+      <div style="margin-top: 15px">
+        <label><strong>Start Date:</strong></label>
+        <input type="date" id="filterStartDate" onchange="loadPayouts()" />
+
+        <label style="margin-left: 10px"><strong>End Date:</strong></label>
+        <input type="date" id="filterEndDate" onchange="loadPayouts()" />
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Payout Requests</h2>
+      <div id="payoutList">Loading...</div>
+    </div>
+
+    <script>
+      function highlightMatch(text, match) {
+        if (!match) return text;
+        const regex = new RegExp("(" + match + ")", "ig");
+        return text.replace(regex, '<span class="highlight">$1</span>');
+      }
+
+      async function loadPayouts() {
+        const filter = document.getElementById("filterStatus").value;
+        const advisorQuery = document
+          .getElementById("searchAdvisor")
+          .value.trim()
+          .toLowerCase();
+
+        const startDateVal = document.getElementById("filterStartDate").value;
+        const endDateVal = document.getElementById("filterEndDate").value;
+
+        const token = localStorage.getItem("authToken");
+
+        const res = await fetch("/admin/payouts", {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        const payouts = await res.json();
+        const list = document.getElementById("payoutList");
+
+        let filtered =
+          filter === "all"
+            ? payouts
+            : payouts.filter((p) => p.status === filter);
+
+        // ⭐ FILTER BY ADVISOR
+        if (advisorQuery.length > 0) {
+          filtered = filtered.filter((p) =>
+            p.advisorId.toLowerCase().includes(advisorQuery)
+          );
+        }
+
+        // ⭐ DATE RANGE FILTERING
+        if (startDateVal) {
+          const start = new Date(startDateVal).setHours(0, 0, 0, 0);
+          filtered = filtered.filter((p) => p.createdAt >= start);
+        }
+
+        if (endDateVal) {
+          const end = new Date(endDateVal).setHours(23, 59, 59, 999);
+          filtered = filtered.filter((p) => p.createdAt <= end);
+        }
+
+        if (filtered.length === 0) {
+          list.innerHTML = "<p>No payout requests found.</p>";
+          return;
+        }
+
+        list.innerHTML = "";
+
+        filtered
+          .sort((a, b) => b.createdAt - a.createdAt)
+          .forEach((p) => {
+            const div = document.createElement("div");
+            div.className = "payout-row";
+
+            const created = new Date(p.createdAt).toLocaleString();
+            const completed = p.completedAt
+              ? new Date(p.completedAt).toLocaleString()
+              : "—";
+
+            const advisorDisplay = highlightMatch(p.advisorId, advisorQuery);
+
+            div.innerHTML = `
+                <div><strong>Advisor:</strong> ${advisorDisplay}</div>
+                <div><strong>Amount:</strong> $${p.amount.toFixed(2)}</div>
+                <div><strong>Requested:</strong> ${created}</div>
+                <div><strong>Completed:</strong> ${completed}</div>
+                <div class="status ${p.status}">
+                  Status: ${p.status.toUpperCase()}
+                </div>
+              `;
+
+            if (p.status === "pending") {
+              div.innerHTML += `
+                  <button class="btn" onclick="approvePayout('${p.id}')">
+                    Approve
+                  </button>
+                `;
+            }
+
+            if (p.status === "approved") {
+              div.innerHTML += `
+                  <button class="btn" onclick="completePayout('${p.id}')">
+                    Mark Completed
+                  </button>
+                `;
+            }
+
+            list.appendChild(div);
+          });
+      }
+
+      async function approvePayout(id) {
+        const token = localStorage.getItem("authToken");
+
+        await fetch("/admin/payouts/approve", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ payoutId: id }),
+        });
+
+        alert("Payout approved!");
+        loadPayouts();
+      }
+
+      async function completePayout(id) {
+        const token = localStorage.getItem("authToken");
+
+        await fetch("/admin/payouts/complete", {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer " + token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ payoutId: id }),
+        });
+
+        alert("Payout marked as completed!");
+        loadPayouts();
+      }
+
+      loadPayouts();
+    </script>
+  </body>
+</html>

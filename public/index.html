@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LovePsychicAI</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1 class="title">LovePsychicAI Advisors</h1>
+
+    <div class="advisor-grid" id="advisorGrid"></div>
+
+    <!-- Modal for "See All Reviews" -->
+    <div id="reviewModal" class="modal hidden">
+      <div class="modal-content">
+        <span class="modal-close" onclick="closeReviewModal()">&times;</span>
+        <h2>All Reviews</h2>
+        <div id="modalReviews"></div>
+      </div>
+    </div>
+    <!-- Socket.IO must load first -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Your main homepage script -->
+    <script src="app.js"></script>
+
+    <script src="app.js"></script>
+  </body>
+</html>

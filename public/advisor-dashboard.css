@@ -1,0 +1,50 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #fafafa;
+  margin: 0;
+  padding: 0;
+}
+
+.topbar {
+  background: #7f3bf5;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar h2 {
+  margin: 0;
+}
+
+.section {
+  padding: 20px;
+  margin-top: 10px;
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+button {
+  background: #ff69b4;
+  border: none;
+  padding: 10px 15px;
+  color: white;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button:hover {
+  background: #ff85c2;
+}
+
+#requestsList .request {
+  background: #f0e6ff;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+#requestsList .request button {
+  margin-right: 10px;
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Psychic Profile</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="profile-body">
+    <div class="profile-container">
+      <button class="back-btn" onclick="window.location.href='index.html'">
+        ← Back
+      </button>
+
+      <!-- Psychic profile info loads here -->
+      <div id="profile">
+        Loading psychic info...
+        <!-- ⭐ REQUIRED for Call Button to appear -->
+        <div class="profile-buttons"></div>
+      </div>
+
+      <h2>Customer Reviews</h2>
+      <div id="reviews">Loading reviews...</div>
+    </div>
+
+    <!-- --------------------------------------------------
+         PHONE READING MODAL
+    --------------------------------------------------- -->
+    <div id="phoneModal" class="modal hidden">
+      <div class="modal-backdrop"></div>
+      <div class="modal-content">
+        <button class="modal-close" id="phoneModalClose">&times;</button>
+
+        <h2>Phone Reading</h2>
+
+        <p class="modal-advisor-name">
+          Advisor: <span id="phoneAdvisorName"></span>
+        </p>
+
+        <p id="phoneStatusText">Connecting…</p>
+
+        <p>Call duration: <span id="phoneCallTimer">00:00</span></p>
+
+        <div class="modal-actions">
+          <button class="btn danger" id="endPhoneReadingBtn">
+            End Phone Reading
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- --------------------------------------------------
+         SCRIPT: ADD CALL BUTTON FUNCTIONALITY
+    --------------------------------------------------- -->
+    <script>
+      const observer = new MutationObserver(() => {
+        const profileDiv = document.getElementById("profile");
+        if (!profileDiv) return;
+
+        // Prevent duplicate button
+        if (document.getElementById("callNowBtn")) return;
+
+        // Grab advisor data from profile.js
+        const advisorJson = profileDiv.getAttribute("data-advisor");
+        if (!advisorJson) return;
+
+        const advisor = JSON.parse(advisorJson);
+
+        // Create CALL NOW button
+        const btn = document.createElement("button");
+        btn.id = "callNowBtn";
+        btn.className = "call-btn";
+        btn.textContent = "📞 Call Now";
+
+        // ⭐ EXACT code you asked for
+        btn.onclick = () => {
+          localStorage.setItem("currentAdvisor", advisor.userId);
+          openPhoneModal(advisor);
+        };
+
+        // Attach button
+        const header = profileDiv.querySelector(".profile-buttons");
+        if (header) header.appendChild(btn);
+      });
+
+      observer.observe(document.getElementById("profile"), {
+        childList: true,
+        subtree: true,
+      });
+    </script>
+
+    <script src="profile.js"></script>
+  </body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Live Chat Reading</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="chat-body">
+    <div class="chat-container">
+      <!-- CHAT HEADER -->
+      <div class="chat-header">
+        <button class="back-btn" onclick="window.history.back()">← Back</button>
+
+        <div>
+          <h2 id="chatPsychicName">Live Chat</h2>
+          <p id="chatRoleLabel">User</p>
+
+          <!-- Advisor presence badge -->
+          <span
+            id="advisorStatus"
+            style="
+              display: inline-block;
+              margin-top: 4px;
+              font-size: 12px;
+              color: #888;
+            "
+          >
+            Advisor: offline
+          </span>
+        </div>
+
+        <!-- TIMER -->
+        <div class="chat-timer">⏳ <span id="timer">00:00</span></div>
+
+        <!-- LIVE COST -->
+        <div class="chat-cost">$<span id="currentCost">0.00</span></div>
+
+        <!-- WALLET -->
+        <div class="chat-credits">
+          Credits: $<span id="walletCredits">0.00</span>
+        </div>
+      </div>
+
+      <!-- 🔵 CONNECTION STATUS -->
+      <div
+        id="connectionStatus"
+        class="connection-status"
+        style="color: red; font-size: 14px; text-align: center; margin-top: 5px"
+      ></div>
+
+      <!-- CHAT WINDOW -->
+      <div id="chatWindow" class="chat-window"></div>
+
+      <!-- ✏️ TYPING INDICATOR -->
+      <div
+        id="typingIndicator"
+        class="typing-indicator"
+        style="
+          display: none;
+          font-style: italic;
+          font-size: 14px;
+          padding: 5px 10px;
+          color: #555;
+        "
+      ></div>
+
+      <!-- ⭐⭐⭐ CATEGORIZED USER QUICK REPLIES -->
+      <div id="quickReplyCategories" style="margin-top: 10px">
+        <!-- CATEGORY: LOVE -->
+        <div class="qr-category">
+          <div class="qr-header" data-target="qr-love">❤️ Love ▾</div>
+          <div id="qr-love" class="qr-list">
+            <button class="quick-btn">
+              Can you see anything about my love life?
+            </button>
+            <button class="quick-btn">Is there someone new coming?</button>
+            <button class="quick-btn">What does my partner feel?</button>
+            <button class="quick-btn">Are we meant to be?</button>
+          </div>
+        </div>
+
+        <!-- CATEGORY: CAREER -->
+        <div class="qr-category">
+          <div class="qr-header" data-target="qr-career">💼 Career ▾</div>
+          <div id="qr-career" class="qr-list">
+            <button class="quick-btn">What do you see for my career?</button>
+            <button class="quick-btn">Should I change jobs?</button>
+            <button class="quick-btn">What blocks my success?</button>
+          </div>
+        </div>
+
+        <!-- CATEGORY: LIFE -->
+        <div class="qr-category">
+          <div class="qr-header" data-target="qr-life">🌟 Life Path ▾</div>
+          <div id="qr-life" class="qr-list">
+            <button class="quick-btn">What direction should I take?</button>
+            <button class="quick-btn">
+              What do you sense around my energy?
+            </button>
+            <button class="quick-btn">Any important messages for me?</button>
+          </div>
+        </div>
+
+        <!-- CATEGORY: FUTURE -->
+        <div class="qr-category">
+          <div class="qr-header" data-target="qr-future">🔮 Future ▾</div>
+          <div id="qr-future" class="qr-list">
+            <button class="quick-btn">What is coming soon?</button>
+            <button class="quick-btn">Any warnings I should know?</button>
+            <button class="quick-btn">What positive changes do you see?</button>
+          </div>
+        </div>
+
+        <!-- CATEGORY: GRATITUDE -->
+        <div class="qr-category">
+          <div class="qr-header" data-target="qr-thanks">🙏 Gratitude ▾</div>
+          <div id="qr-thanks" class="qr-list">
+            <button class="quick-btn">Thank you!</button>
+            <button class="quick-btn">That makes sense!</button>
+            <button class="quick-btn">I appreciate your insight.</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⭐⭐⭐ AI-GENERATED QUICK REPLIES -->
+      <div
+        id="aiQuickReplies"
+        style="
+          display: none;
+          margin: 10px 0;
+          padding: 8px;
+          border-radius: 6px;
+          background: #f7f7f7;
+          border: 1px solid #ddd;
+        "
+      >
+        <p style="margin: 0 0 6px; font-weight: bold; font-size: 14px">
+          Suggested replies:
+        </p>
+        <div
+          id="aiQRbuttons"
+          style="display: flex; flex-wrap: wrap; gap: 6px"
+        ></div>
+      </div>
+      <!-- 🧠 AI DEEP REPLY SUGGESTION -->
+      <div
+        id="aiDeepReply"
+        style="
+          display: none;
+          background: #f9f5ff;
+          border: 1px solid #e0d4ff;
+          border-radius: 6px;
+          padding: 8px 10px;
+          margin-top: 8px;
+          font-size: 14px;
+        "
+      >
+        <div style="font-weight: 600; margin-bottom: 4px">
+          🧠 AI Deep Reply Suggestion
+        </div>
+        <div id="aiDeepText" style="margin-bottom: 6px; line-height: 1.4"></div>
+        <button
+          type="button"
+          id="aiDeepSendBtn"
+          style="
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: none;
+            background: #6f42c1;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+          "
+        >
+          Send this
+        </button>
+      </div>
+
+      <!-- MESSAGE INPUT + EMOJI + IMAGE -->
+      <form id="chatForm" class="chat-form">
+        <button
+          type="button"
+          id="emojiBtn"
+          style="margin-right: 6px; padding: 0 8px; font-size: 18px"
+        >
+          😊
+        </button>
+
+        <input
+          id="chatInput"
+          type="text"
+          placeholder="Type your message..."
+          autocomplete="off"
+        />
+
+        <button type="button" id="imageBtn" style="margin-left: 6px">📷</button>
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/*"
+          style="display: none"
+        />
+
+        <button type="submit">Send</button>
+      </form>
+
+      <!-- EMOJI PICKER -->
+      <div
+        id="emojiPicker"
+        style="
+          display: none;
+          background: #fff;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          padding: 6px;
+          margin-top: 4px;
+          max-width: 320px;
+        "
+      >
+        <button type="button" class="emoji-item">😀</button>
+        <button type="button" class="emoji-item">😁</button>
+        <button type="button" class="emoji-item">😂</button>
+        <button type="button" class="emoji-item">😊</button>
+        <button type="button" class="emoji-item">😍</button>
+        <button type="button" class="emoji-item">😇</button>
+        <button type="button" class="emoji-item">😎</button>
+        <button type="button" class="emoji-item">🤔</button>
+        <button type="button" class="emoji-item">🙏</button>
+        <button type="button" class="emoji-item">✨</button>
+        <button type="button" class="emoji-item">🔥</button>
+        <button type="button" class="emoji-item">💖</button>
+      </div>
+
+      <!-- 📂 DOWNLOAD TRANSCRIPT -->
+      <button
+        id="downloadTranscriptBtn"
+        class="end-chat-btn"
+        style="
+          background: #0275d8;
+          color: white;
+          padding: 10px;
+          margin-top: 10px;
+          width: 100%;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+          font-size: 16px;
+        "
+      >
+        Download Transcript
+      </button>
+
+      <!-- 🔴 USER END CHAT BUTTON -->
+      <button
+        id="endChatBtnUser"
+        class="end-chat-btn"
+        style="
+          background: #d9534f;
+          color: #fff;
+          padding: 10px;
+          margin-top: 10px;
+          width: 100%;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+          font-size: 16px;
+        "
+      >
+        End Chat
+      </button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="chat.js"></script>
+  </body>
+</html>

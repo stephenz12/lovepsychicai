@@ -1,0 +1,29 @@
+[
+  {
+    "id": "ask_fran",
+    "name": "Ask Fran",
+    "photo": "https://cdn.pixabay.com/photo/2022/10/19/01/02/woman-7531315_1280.png",
+    "desc": "Delivering truth with detail, laughter, and connection for 32+ years",
+    "rating": 4.7,
+    "reviews": "36K",
+    "readings": 163552
+  },
+  {
+    "id": "rootman",
+    "name": "ROOTman",
+    "photo": "https://cdn.pixabay.com/photo/2019/12/10/13/31/woman-4685862_960_720.jpg",
+    "desc": "Elemental wisdom unlocking paranormal mysteries since childhood",
+    "rating": 4.96,
+    "reviews": "2,056",
+    "readings": 8110
+  },
+  {
+    "id": "c_garrett",
+    "name": "C Garrett",
+    "photo": "https://cdn.pixabay.com/photo/2022/10/19/01/02/woman-7531315_1280.png",
+    "desc": "Intuitive Tarot reader with 25 years experience. Honesty and compassion.",
+    "rating": 4.88,
+    "reviews": "10K",
+    "readings": 51698
+  }
+]

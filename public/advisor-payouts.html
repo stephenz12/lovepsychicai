@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Advisor Payouts</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        padding: 20px;
+      }
+      h1 {
+        margin-bottom: 10px;
+      }
+      .section {
+        background: white;
+        padding: 18px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
+      }
+      .btn {
+        padding: 10px 14px;
+        border: none;
+        border-radius: 6px;
+        background: #567bfb;
+        color: white;
+        cursor: pointer;
+        font-size: 15px;
+      }
+      .btn:hover {
+        background: #3e5fd6;
+      }
+      input[type="number"] {
+        padding: 8px;
+        width: 200px;
+        font-size: 16px;
+        margin-right: 10px;
+      }
+      .payout-row {
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+      }
+      .status {
+        font-weight: bold;
+      }
+      .pending {
+        color: orange;
+      }
+      .approved {
+        color: blue;
+      }
+      .completed {
+        color: green;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Advisor Payouts</h1>
+
+    <button class="btn" onclick="window.location.href='advisor-dashboard.html'">
+      ← Back to Dashboard
+    </button>
+
+    <!-- UNPAID EARNINGS -->
+    <div class="section">
+      <h2>Unpaid Earnings</h2>
+
+      <p>Total Chat Earnings: <strong id="totalChat">$0.00</strong></p>
+      <p>Total Phone Earnings: <strong id="totalPhone">$0.00</strong></p>
+
+      <hr />
+      <p>
+        <strong>Unpaid Balance:</strong>
+        <span id="unpaidBalance" style="font-size: 20px; color: green"
+          >$0.00</span
+        >
+      </p>
+
+      <!-- Request Payout -->
+      <div style="margin-top: 20px">
+        <h3>Request a Payout</h3>
+
+        <input
+          type="number"
+          id="payoutAmount"
+          placeholder="Enter amount"
+          min="1"
+        />
+
+        <button class="btn" id="requestPayoutBtn">Request Payout</button>
+
+        <p id="payoutMessage" style="margin-top: 10px; color: red"></p>
+      </div>
+    </div>
+
+    <!-- PAYOUT HISTORY -->
+    <div class="section">
+      <h2>Your Payout History</h2>
+      <div id="payoutHistory">Loading...</div>
+    </div>
+
+    <script>
+      let advisorId = null;
+
+      async function loadAdvisor() {
+        const token = localStorage.getItem("authToken");
+        const me = await fetch("/me", {
+          headers: { Authorization: "Bearer " + token },
+        }).then((r) => r.json());
+
+        if (me.error) {
+          alert("Session expired. Please log in again.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        advisorId = me.userId;
+        loadUnpaid();
+        loadPayoutHistory();
+      }
+
+      // Load unpaid earnings
+      async function loadUnpaid() {
+        const res = await fetch("/advisor/unpaid-earnings/" + advisorId);
+        const data = await res.json();
+
+        document.getElementById("totalChat").textContent =
+          "$" + data.totalChat.toFixed(2);
+
+        document.getElementById("totalPhone").textContent =
+          "$" + data.totalPhone.toFixed(2);
+
+        document.getElementById("unpaidBalance").textContent =
+          "$" + data.unpaid.toFixed(2);
+      }
+
+      // Load payout history
+      async function loadPayoutHistory() {
+        const res = await fetch("/admin/payouts", {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("authToken"),
+          },
+        });
+
+        const all = await res.json();
+        const mine = all.filter((p) => p.advisorId === advisorId);
+
+        const list = document.getElementById("payoutHistory");
+
+        if (mine.length === 0) {
+          list.innerHTML = "<p>No payout requests yet.</p>";
+          return;
+        }
+
+        list.innerHTML = "";
+        mine
+          .sort((a, b) => b.createdAt - a.createdAt)
+          .forEach((p) => {
+            const div = document.createElement("div");
+            div.className = "payout-row";
+
+            const created = new Date(p.createdAt).toLocaleString();
+            const completed = p.completedAt
+              ? new Date(p.completedAt).toLocaleString()
+              : "";
+
+            div.innerHTML = `
+              <div><strong>Amount:</strong> $${p.amount.toFixed(2)}</div>
+              <div><strong>Requested:</strong> ${created}</div>
+              ${
+                p.completedAt
+                  ? `<div><strong>Completed:</strong> ${completed}</div>`
+                  : ""
+              }
+              <div class="status ${p.status}">Status: ${p.status}</div>
+            `;
+
+            list.appendChild(div);
+          });
+      }
+
+      // Request payout
+      document
+        .getElementById("requestPayoutBtn")
+        .addEventListener("click", async () => {
+          const amount = parseFloat(
+            document.getElementById("payoutAmount").value
+          );
+          const messageEl = document.getElementById("payoutMessage");
+
+          if (!amount || amount <= 0) {
+            messageEl.textContent = "Enter a valid amount.";
+            return;
+          }
+
+          const unpaidText = document
+            .getElementById("unpaidBalance")
+            .textContent.replace("$", "");
+          const unpaid = parseFloat(unpaidText);
+
+          if (amount > unpaid) {
+            messageEl.textContent =
+              "You cannot request more than your unpaid balance.";
+            return;
+          }
+
+          const res = await fetch("/advisor/request-payout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              advisorId,
+              amount,
+            }),
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            messageEl.style.color = "green";
+            messageEl.textContent = "Payout request submitted!";
+            document.getElementById("payoutAmount").value = "";
+            loadUnpaid();
+            loadPayoutHistory();
+          } else {
+            messageEl.style.color = "red";
+            messageEl.textContent = "Something went wrong.";
+          }
+        });
+
+      loadAdvisor();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>All Chat Sessions</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="admin-body">
+    <!-- ADMIN NAVIGATION BAR -->
+    <nav class="admin-nav">
+      <a href="admin-users.html">Users</a>
+      <a href="admin-sessions.html">Sessions</a>
+      <a href="admin-earnings.html">Earnings</a>
+      <a href="add-credits.html">Add Credits</a>
+      <button id="logoutBtn" class="logout-btn">Logout</button>
+    </nav>
+
+    <div class="admin-container">
+      <!-- PAGE CONTENT -->
+      <button id="refreshBtn" style="margin-bottom: 15px">Refresh</button>
+      <div id="sessionsList"></div>
+    </div>
+
+    <script src="admin-sessions.js"></script>
+    <script src="logout.js"></script>
+  </body>
+</html>

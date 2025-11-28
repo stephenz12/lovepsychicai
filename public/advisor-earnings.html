@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Advisor Earnings History</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+      }
+
+      .section {
+        padding: 16px;
+        background: white;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+      }
+
+      th {
+        background: #f1f1f1;
+        font-weight: bold;
+      }
+
+      .btn {
+        padding: 8px 12px;
+        background: #567bfb;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background: #3e5fd6;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Full Earnings History</h1>
+    <button class="btn" onclick="window.location.href='advisor-dashboard.html'">
+      ← Back to Dashboard
+    </button>
+
+    <!-- Filters -->
+    <div class="section">
+      <h2>Filters</h2>
+
+      <label><strong>Date From:</strong></label>
+      <input type="date" id="filterFrom" />
+
+      <label style="margin-left: 15px"><strong>Date To:</strong></label>
+      <input type="date" id="filterTo" />
+
+      <button class="btn" id="applyFilters" style="margin-left: 15px">
+        Apply Filters
+      </button>
+
+      <button
+        class="btn"
+        id="resetFilters"
+        style="margin-left: 10px; background: #777"
+      >
+        Reset
+      </button>
+
+      <button class="btn" id="downloadFullCSV" style="margin-left: 10px">
+        Export CSV
+      </button>
+    </div>
+
+    <!-- Totals -->
+    <div class="section">
+      <h2>Total Earnings</h2>
+
+      <p>Total Chat Earnings: <strong id="totalChat">$0.00</strong></p>
+      <p>Total Phone Earnings: <strong id="totalPhone">$0.00</strong></p>
+      <p style="margin-top: 10px; font-size: 18px">
+        <strong>Grand Total: </strong>
+        <span id="grandTotal" style="color: green">$0.00</span>
+      </p>
+    </div>
+
+    <!-- Earnings Table -->
+    <div class="section">
+      <h2>All Earnings</h2>
+      <div id="earningsTableContainer">Loading...</div>
+    </div>
+
+    <script src="advisor-earnings.js"></script>
+  </body>
+</html>

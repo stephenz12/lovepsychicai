@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin – Advisor Earnings</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 0;
+      }
+
+      .admin-container {
+        max-width: 1100px;
+        margin: 30px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        padding: 20px 24px 30px;
+      }
+
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .admin-header h1 {
+        font-size: 24px;
+        margin: 0;
+      }
+
+      .admin-header .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        background: #eef1ff;
+        color: #4953c8;
+      }
+
+      .status-msg {
+        font-size: 14px;
+        margin-bottom: 10px;
+        color: #555;
+      }
+
+      .status-msg.error {
+        color: #d9534f;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+      }
+
+      th {
+        background: #fafafa;
+        font-weight: 600;
+      }
+
+      tr:nth-child(even) td {
+        background: #fafcff;
+      }
+
+      .right {
+        text-align: right;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        background: #e1f5e1;
+        color: #2f7b2f;
+      }
+
+      .footer-note {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #888;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .btn-refresh {
+        padding: 6px 10px;
+        font-size: 13px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      .btn-refresh:hover {
+        background: #f1f1f1;
+      }
+
+      .last-updated {
+        font-size: 12px;
+        color: #666;
+      }
+
+      .back-link {
+        font-size: 13px;
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      .back-link:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="admin-container">
+      <div class="admin-header">
+        <h1>Advisor Earnings</h1>
+        <div class="actions">
+          <span class="pill">Live summary</span>
+          <button id="refreshBtn" class="btn-refresh">Refresh now</button>
+        </div>
+      </div>
+
+      <div id="status" class="status-msg">Loading earnings…</div>
+
+      <table id="earningsTable">
+        <thead>
+          <tr>
+            <th>Advisor ID</th>
+            <th class="right">Sessions</th>
+            <th class="right">Total Seconds</th>
+            <th class="right">Total Hours</th>
+            <th class="right">Total Earned ($)</th>
+          </tr>
+        </thead>
+        <tbody id="earningsBody">
+          <tr>
+            <td colspan="5">No data yet.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer-note">
+        <span class="last-updated" id="lastUpdated">Last updated: —</span>
+        <a href="/admin.html" class="back-link"
+          >&larr; Back to Admin Dashboard</a
+        >
+      </div>
+    </div>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const bodyEl = document.getElementById("earningsBody");
+      const lastUpdatedEl = document.getElementById("lastUpdated");
+      const refreshBtn = document.getElementById("refreshBtn");
+
+      function formatDateTime(ts) {
+        const d = new Date(ts);
+        return (
+          d.toLocaleDateString() +
+          " " +
+          d.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          })
+        );
+      }
+
+      async function fetchEarnings() {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+          statusEl.textContent = "Missing auth token. Please log in as admin.";
+          statusEl.classList.add("error");
+          return;
+        }
+
+        statusEl.textContent = "Loading earnings…";
+        statusEl.classList.remove("error");
+
+        try {
+          const res = await fetch("/admin/earnings", {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          });
+
+          if (!res.ok) {
+            throw new Error("Server returned " + res.status);
+          }
+
+          const data = await res.json();
+
+          if (!Array.isArray(data) || data.length === 0) {
+            bodyEl.innerHTML =
+              '<tr><td colspan="5">No sessions recorded yet.</td></tr>';
+            statusEl.textContent = "No earnings data found.";
+          } else {
+            // sort by totalCost descending
+            data.sort((a, b) => (b.totalCost || 0) - (a.totalCost || 0));
+            renderTable(data);
+            statusEl.textContent = "Earnings loaded.";
+          }
+
+          lastUpdatedEl.textContent =
+            "Last updated: " + formatDateTime(Date.now());
+        } catch (err) {
+          console.error("Error loading earnings:", err);
+          statusEl.textContent =
+            "Error loading earnings. Check console for details.";
+          statusEl.classList.add("error");
+        }
+      }
+
+      function renderTable(rows) {
+        bodyEl.innerHTML = "";
+
+        rows.forEach((row) => {
+          const tr = document.createElement("tr");
+
+          const totalSeconds = row.totalSeconds || 0;
+          const totalHours = totalSeconds / 3600;
+          const totalCost = row.totalCost || 0;
+          const sessions = row.sessions || 0;
+
+          const tdAdvisor = document.createElement("td");
+          tdAdvisor.textContent = row.advisorId || "(unknown)";
+
+          const tdSessions = document.createElement("td");
+          tdSessions.className = "right";
+          tdSessions.textContent = sessions;
+
+          const tdSeconds = document.createElement("td");
+          tdSeconds.className = "right";
+          tdSeconds.textContent = totalSeconds.toLocaleString();
+
+          const tdHours = document.createElement("td");
+          tdHours.className = "right";
+          tdHours.textContent = totalHours.toFixed(2);
+
+          const tdCost = document.createElement("td");
+          tdCost.className = "right";
+          tdCost.innerHTML =
+            "$" +
+            totalCost.toFixed(2) +
+            (sessions > 0
+              ? ` <span class="badge">${(totalCost / sessions).toFixed(
+                  2
+                )} avg/session</span>`
+              : "");
+
+          tr.appendChild(tdAdvisor);
+          tr.appendChild(tdSessions);
+          tr.appendChild(tdSeconds);
+          tr.appendChild(tdHours);
+          tr.appendChild(tdCost);
+
+          bodyEl.appendChild(tr);
+        });
+      }
+
+      // Manual refresh
+      if (refreshBtn) {
+        refreshBtn.addEventListener("click", fetchEarnings);
+      }
+
+      // Auto-refresh every 10 seconds (real-time-ish)
+      setInterval(fetchEarnings, 10000);
+
+      // Initial load
+      fetchEarnings();
+    </script>
+  </body>
+</html>

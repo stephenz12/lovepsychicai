@@ -1,0 +1,50 @@
+[
+  {
+    "token": "407f9832bb299b98d49690535d4f458d70ee3c20837be8d24f3237d60cf1",
+    "userId": "admin@example.com",
+    "role": "admin",
+    "createdAt": 1764145547366
+  },
+  {
+    "token": "f37aea1ee950dcf91348624ca71367c3250db6b216dfa959f978b99eca5e",
+    "userId": "admin@example.com",
+    "role": "admin",
+    "createdAt": 1764182939361
+  },
+  {
+    "token": "dfb87671604c4b147e7ddade8e4c62662b99e8ad551ee8884c0d5787bb4f",
+    "userId": "admin@example.com",
+    "role": "admin",
+    "createdAt": 1764183244874
+  },
+  {
+    "token": "c0b9e92daf79270154796a23d281a7d2fed3a7c43e60242e37e22f72322e",
+    "userId": "admin@example.com",
+    "role": "admin",
+    "createdAt": 1764183403542
+  },
+  {
+    "token": "4e64e38d39f5cb9cae2527b3637f9fef1f4e3446a26bc2cec16d38094601",
+    "userId": "admin@example.com",
+    "role": "admin",
+    "createdAt": 1764184436548
+  },
+  {
+    "token": "236d7865220aafeae83c5af293af8e7f99a81ca12691e49a241494688272",
+    "userId": "advisor1@example.com",
+    "role": "advisor",
+    "createdAt": 1764188779130
+  },
+  {
+    "token": "6a3ecf75d5614ca59f19fb7dc3006db5a9dcd38a0cdce112047902e6d645",
+    "userId": "admin@example.com",
+    "role": "admin",
+    "createdAt": 1764189086595
+  },
+  {
+    "token": "17edf642119e616d2a0576bbbd722990fbd0bbb45a6b35c882c42ad4f895",
+    "userId": "advisor1@example.com",
+    "role": "advisor",
+    "createdAt": 1764190372971
+  }
+]

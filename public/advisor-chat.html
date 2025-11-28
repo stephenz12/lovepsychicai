@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Advisor Live Chat</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body class="chat-body">
+    <div class="chat-container">
+      <!-- CHAT HEADER -->
+      <div class="chat-header">
+        <button class="back-btn" onclick="window.history.back()">← Back</button>
+
+        <div>
+          <h2 id="chatPsychicName">Chat with Client</h2>
+          <p id="chatRoleLabel">Advisor</p>
+          <!-- User presence badge -->
+          <span
+            id="userStatus"
+            style="
+              display: inline-block;
+              margin-top: 4px;
+              font-size: 12px;
+              color: #888;
+            "
+          >
+            User: offline
+          </span>
+        </div>
+
+        <!-- TIMER -->
+        <div class="chat-timer">⏳ <span id="timer">00:00</span></div>
+
+        <!-- LIVE COST -->
+        <div class="chat-cost">$<span id="currentCost">0.00</span></div>
+
+        <!-- (Advisor wallet placeholder) -->
+        <div class="chat-credits">
+          Credits: $<span id="walletCredits">0.00</span>
+        </div>
+      </div>
+
+      <!-- CONNECTION STATUS -->
+      <div
+        id="connectionStatus"
+        style="color: red; font-size: 14px; text-align: center; margin-top: 5px"
+      ></div>
+
+      <!-- CHAT WINDOW -->
+      <div id="chatWindow" class="chat-window"></div>
+
+      <!-- CLIENT TYPING INDICATOR -->
+      <div
+        id="typingIndicator"
+        class="typing-indicator"
+        style="
+          display: none;
+          font-style: italic;
+          font-size: 14px;
+          padding: 5px 10px;
+          color: #555;
+        "
+      ></div>
+
+      <!-- MESSAGE INPUT + EMOJI + IMAGE -->
+      <!-- QUICK REPLY BUTTONS -->
+      <div
+        id="quickReplies"
+        style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px"
+      >
+        <button type="button" class="quick-btn">
+          Hello! How can I help you today?
+        </button>
+        <button type="button" class="quick-btn">
+          I’m tuning into your energy…
+        </button>
+        <button type="button" class="quick-btn">
+          Let me connect spiritually…
+        </button>
+        <button type="button" class="quick-btn">
+          What specific question do you have?
+        </button>
+        <button type="button" class="quick-btn">
+          I sense a shift around you…
+        </button>
+        <button type="button" class="quick-btn">
+          Let’s look deeper into this…
+        </button>
+      </div>
+
+      <form id="chatForm" class="chat-form">
+        <button
+          type="button"
+          id="emojiBtn"
+          style="margin-right: 6px; padding: 0 8px; font-size: 18px"
+        >
+          😊
+        </button>
+
+        <input
+          id="chatInput"
+          type="text"
+          placeholder="Type your message..."
+          autocomplete="off"
+        />
+
+        <button type="button" id="imageBtn" style="margin-left: 6px">📷</button>
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/*"
+          style="display: none"
+        />
+
+        <button type="submit">Send</button>
+      </form>
+
+      <!-- SIMPLE EMOJI PICKER -->
+      <div
+        id="emojiPicker"
+        style="
+          display: none;
+          background: #fff;
+          border: 1px solid #ddd;
+          border-radius: 6px;
+          padding: 6px;
+          margin-top: 4px;
+          max-width: 320px;
+        "
+      >
+        <button type="button" class="emoji-item">😀</button>
+        <button type="button" class="emoji-item">😁</button>
+        <button type="button" class="emoji-item">😂</button>
+        <button type="button" class="emoji-item">😊</button>
+        <button type="button" class="emoji-item">😍</button>
+        <button type="button" class="emoji-item">😇</button>
+        <button type="button" class="emoji-item">😎</button>
+        <button type="button" class="emoji-item">🤔</button>
+        <button type="button" class="emoji-item">🙏</button>
+        <button type="button" class="emoji-item">✨</button>
+        <button type="button" class="emoji-item">🔥</button>
+        <button type="button" class="emoji-item">💖</button>
+      </div>
+
+      <!-- END CHAT BUTTON -->
+      <button
+        id="endChatBtnAdvisor"
+        class="end-chat-btn"
+        style="
+          background: #d9534f;
+          color: #fff;
+          padding: 10px;
+          margin-top: 10px;
+          width: 100%;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+          font-size: 16px;
+        "
+      >
+        End Chat
+      </button>
+
+      <!-- DOWNLOAD TRANSCRIPT -->
+      <button
+        id="downloadTranscriptBtn"
+        class="end-chat-btn"
+        style="
+          background: #0275d8;
+          color: white;
+          padding: 10px;
+          margin-top: 10px;
+          width: 100%;
+          border: none;
+          cursor: pointer;
+          border-radius: 5px;
+          font-size: 16px;
+        "
+      >
+        Download Transcript
+      </button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="advisor-chat.js"></script>
+  </body>
+</html>

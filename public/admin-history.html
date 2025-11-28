@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin – Chat History Viewer</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 0;
+      }
+
+      .admin-container {
+        max-width: 1100px;
+        margin: 30px auto;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        padding: 20px 24px 30px;
+      }
+
+      .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      }
+
+      .admin-header h1 {
+        font-size: 24px;
+        margin: 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 14px;
+      }
+
+      th,
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+      }
+
+      th {
+        background: #fafafa;
+        font-weight: 600;
+      }
+
+      tr:nth-child(even) td {
+        background: #fafcff;
+      }
+
+      .right {
+        text-align: right;
+      }
+
+      .msg-meta {
+        font-size: 12px;
+        color: #777;
+        margin-bottom: 4px;
+      }
+
+      .msg-user {
+        background: #dff0ff;
+        padding: 8px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
+
+      .msg-advisor {
+        background: #e7f7e7;
+        padding: 8px;
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
+
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-box {
+        width: 600px;
+        max-height: 80vh;
+        overflow-y: auto;
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+      }
+
+      .close-btn {
+        float: right;
+        cursor: pointer;
+        background: #d9534f;
+        padding: 4px 10px;
+        border-radius: 4px;
+        color: white;
+        border: none;
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .back-link {
+        margin-top: 20px;
+        display: block;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="admin-container">
+      <div class="admin-header">
+        <h1>Chat History Viewer</h1>
+        <a href="/admin.html" class="back-link"
+          >&larr; Back to Admin Dashboard</a
+        >
+      </div>
+
+      <div id="status">Loading sessions…</div>
+
+      <table id="sessionsTable">
+        <thead>
+          <tr>
+            <th>Session ID</th>
+            <th>User</th>
+            <th>Advisor</th>
+            <th class="right">Duration (sec)</th>
+            <th class="right">Cost ($)</th>
+            <th class="right">Messages</th>
+            <th>View</th>
+          </tr>
+        </thead>
+        <tbody id="sessionsBody">
+          <tr>
+            <td colspan="7">Loading…</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MODAL -->
+    <div id="historyModal" class="modal">
+      <div class="modal-box">
+        <button class="close-btn" onclick="closeHistoryModal()">Close</button>
+        <h2>Session Messages</h2>
+        <div id="modalContent">Loading…</div>
+      </div>
+    </div>
+
+    <script>
+      const statusEl = document.getElementById("status");
+      const bodyEl = document.getElementById("sessionsBody");
+      const modal = document.getElementById("historyModal");
+      const modalContent = document.getElementById("modalContent");
+
+      async function loadSessions() {
+        const token = localStorage.getItem("authToken");
+
+        const res = await fetch("/admin/sessions", {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        if (!res.ok) {
+          statusEl.textContent = "Error loading sessions.";
+          return;
+        }
+
+        const data = await res.json();
+        renderTable(data);
+      }
+
+      function renderTable(rows) {
+        if (!rows.length) {
+          bodyEl.innerHTML =
+            "<tr><td colspan='7'>No chat sessions found.</td></tr>";
+          return;
+        }
+
+        bodyEl.innerHTML = "";
+
+        rows.forEach((s) => {
+          const tr = document.createElement("tr");
+
+          const totalMsgs = s.messages ? s.messages.length : 0;
+
+          tr.innerHTML = `
+            <td>${s.sessionId}</td>
+            <td>${s.userId || "(unknown)"}</td>
+            <td>${s.advisorId || "(unknown)"}</td>
+            <td class="right">${s.totalSeconds || 0}</td>
+            <td class="right">$${(s.totalCost || 0).toFixed(2)}</td>
+            <td class="right">${totalMsgs}</td>
+            <td><button onclick="viewHistory('${
+              s.sessionId
+            }')">View</button></td>
+          `;
+
+          bodyEl.appendChild(tr);
+        });
+      }
+
+      function viewHistory(sessionId) {
+        modal.style.display = "flex";
+        loadSessionMessages(sessionId);
+      }
+
+      function closeHistoryModal() {
+        modal.style.display = "none";
+      }
+
+      async function loadSessionMessages(sessionId) {
+        const token = localStorage.getItem("authToken");
+
+        const res = await fetch("/admin/sessions", {
+          headers: { Authorization: "Bearer " + token },
+        });
+
+        const rows = await res.json();
+        const session = rows.find((s) => s.sessionId == sessionId);
+
+        if (!session) {
+          modalContent.innerHTML = "<p>Session not found.</p>";
+          return;
+        }
+
+        if (!session.messages || session.messages.length === 0) {
+          modalContent.innerHTML = "<p>No messages in this session.</p>";
+          return;
+        }
+
+        let html = "";
+        session.messages.forEach((m) => {
+          const date = new Date(m.time).toLocaleString();
+
+          html += `
+            <div class="msg-${m.from === "advisor" ? "advisor" : "user"}">
+              <div class="msg-meta">
+                <strong>${m.from}</strong> — ${date}
+              </div>
+              <div>${m.text}</div>
+            </div>
+          `;
+        });
+
+        modalContent.innerHTML = html;
+      }
+
+      loadSessions();
+    </script>
+  </body>
+</html>

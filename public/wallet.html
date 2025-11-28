@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Wallet</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Your Wallet</h1>
+
+    <div id="walletInfo">
+      <p><strong>Credits:</strong> <span id="creditAmount">Loading...</span></p>
+    </div>
+
+    <h2>Add Credits</h2>
+
+    <div>
+      <button onclick="addCredits(5)">Add $5</button>
+      <button onclick="addCredits(10)">Add $10</button>
+      <button onclick="addCredits(20)">Add $20</button>
+    </div>
+
+    <script src="wallet.js"></script>
+  </body>
+</html>

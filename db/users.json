@@ -1,0 +1,16 @@
+[
+  {
+    "userId": "admin@example.com",
+    "email": "admin@example.com",
+    "passwordHash": "$2b$10$txCi4Whz1EnKHSAtuvA9c.nwKhRZeHtngNlP/jaZcrdT3pJqSn70m",
+    "role": "admin",
+    "credits": 999
+  },
+  {
+    "userId": "advisor1@example.com",
+    "email": "advisor1@example.com",
+    "passwordHash": "$2b$10$DKfTzw9smNsOjpXQo.0Az.Y42z7bvUsKxN6A7SMlmOCjvwyZoheBS",
+    "role": "advisor",
+    "credits": 0
+  }
+]

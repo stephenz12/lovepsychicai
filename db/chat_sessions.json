@@ -1,0 +1,52 @@
+[
+  {
+    "sessionId": "1764185012205",
+    "advisorId": "ask_fran",
+    "userId": "admin@example.com",
+    "costPerMinute": 2,
+    "startTime": 1764185012205,
+    "endTime": null,
+    "totalSeconds": 0,
+    "totalCost": 0
+  },
+  {
+    "sessionId": "1764190500385",
+    "advisorId": "ask_fran",
+    "userId": "advisor1@example.com",
+    "costPerMinute": 2,
+    "startTime": 1764190500385,
+    "endTime": 1764190506904,
+    "totalSeconds": 6,
+    "totalCost": 0.2
+  },
+  {
+    "sessionId": "1764190552303",
+    "advisorId": "rootman",
+    "userId": "advisor1@example.com",
+    "costPerMinute": 2,
+    "startTime": 1764190552303,
+    "endTime": 1764190563149,
+    "totalSeconds": 10,
+    "totalCost": 0.33
+  },
+  {
+    "sessionId": "1764190645710",
+    "advisorId": "ask_fran",
+    "userId": "advisor1@example.com",
+    "costPerMinute": 2,
+    "startTime": 1764190645710,
+    "endTime": 1764190648993,
+    "totalSeconds": 3,
+    "totalCost": 0.1
+  },
+  {
+    "sessionId": "1764190652775",
+    "advisorId": "rootman",
+    "userId": "advisor1@example.com",
+    "costPerMinute": 2,
+    "startTime": 1764190652775,
+    "endTime": 1764190655432,
+    "totalSeconds": 2,
+    "totalCost": 0.07
+  }
+]
