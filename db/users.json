@@ -11,6 +11,11 @@
     "email": "advisor1@example.com",
     "passwordHash": "$2b$10$DKfTzw9smNsOjpXQo.0Az.Y42z7bvUsKxN6A7SMlmOCjvwyZoheBS",
     "role": "advisor",
-    "credits": 0
+    "credits": 0,
+    "phoneNumber": "+15615787464",
+    "availableForChat": true,
+    "availableForPhone": true,
+    "inChatSession": false,
+    "inPhoneSession": false
   }
 ]
