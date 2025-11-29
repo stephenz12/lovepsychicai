@@ -417,6 +417,32 @@ app.post("/twilio/voice-handler", (req, res) => {
 });
 
 /***********************************
+ * ⭐ NEW — INBOUND CALL HANDLER
+ ***********************************/
+app.post("/twilio/inbound-call", (req, res) => {
+  const twiml = new twilio.twiml.VoiceResponse();
+
+  // Greeting for inbound callers
+  twiml.say(
+    "Thank you for calling Psychic Connect. Please wait while we connect you to an advisor."
+  );
+
+  const users = readJSON(usersFile);
+
+  // For now, route all inbound calls to advisor1@example.com
+  const advisor = users.find((u) => u.userId === "advisor1@example.com");
+
+  if (!advisor || !advisor.phoneNumber) {
+    twiml.say("All advisors are currently unavailable.");
+  } else {
+    twiml.dial({ callerId: TWILIO_PHONE_NUMBER }, advisor.phoneNumber);
+  }
+
+  res.type("text/xml");
+  res.send(twiml.toString());
+});
+
+/***********************************
  * PHONE END
  ***********************************/
 app.post("/end-phone", (req, res) => {
