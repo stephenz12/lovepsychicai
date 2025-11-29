@@ -21,12 +21,6 @@ const twilio = require("twilio");
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER; // e.g. +13053631648
-// DEBUG — safe: show presence & prefix only
-console.log("TWILIO_ACCOUNT_SID present:", !!TWILIO_ACCOUNT_SID);
-console.log(
-  "TWILIO_ACCOUNT_SID prefix:",
-  TWILIO_ACCOUNT_SID ? TWILIO_ACCOUNT_SID.slice(0, 2) : "(none)"
-);
 
 // Public URL Twilio should call back (must be HTTPS in production)
 const BASE_URL = process.env.BASE_URL || "https://twilio-voice.onrender.com";
@@ -37,12 +31,6 @@ if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
   );
 }
 
-// EARLY DEBUG — safe: print presence & prefix BEFORE Twilio client construction
-console.log("EARLY DEBUG - TWILIO_ACCOUNT_SID present:", !!TWILIO_ACCOUNT_SID);
-console.log(
-  "EARLY DEBUG - TWILIO_ACCOUNT_SID prefix:",
-  TWILIO_ACCOUNT_SID ? TWILIO_ACCOUNT_SID.slice(0, 2) : "(none)"
-);
 const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 /****************************************************/
 
