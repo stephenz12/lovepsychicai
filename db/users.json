@@ -17,5 +17,17 @@
     "availableForPhone": true,
     "inChatSession": false,
     "inPhoneSession": false
+  },
+  {
+    "userId": "advisor2@example.com",
+    "email": "advisor2@example.com",
+    "passwordHash": "$2b$10$DKfTzw9smNsOjpXQo.0Az.Y42z7bvUsKxN6A7SMlmOCjvwyZoheBS",
+    "role": "advisor",
+    "credits": 0,
+    "phoneNumber": "+15555550123",
+    "availableForChat": true,
+    "availableForPhone": true,
+    "inChatSession": false,
+    "inPhoneSession": false
   }
 ]
