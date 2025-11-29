@@ -53,6 +53,7 @@ const chatSessionsFile = path.join(__dirname, "db", "chat_sessions.json");
 const authSessionsFile = path.join(__dirname, "db", "auth_sessions.json");
 const phoneSessionsFile = path.join(__dirname, "db", "phone_sessions.json");
 const payoutsFile = path.join(__dirname, "db", "payouts.json"); // ⭐ NEW
+const routingStateFile = path.join(__dirname, "db", "routing_state.json"); // ⭐ ROUND-ROBIN STATE
 
 // JSON helper
 function readJSON(file) {
@@ -394,7 +395,7 @@ app.post("/start-phone", async (req, res) => {
  * ⭐ TWILIO VOICE HANDLER — CONNECT USER → ADVISOR
  ***********************************/
 app.post("/twilio/voice-handler", (req, res) => {
-  const advisorId = req.query.advisorId; // <--- NEW
+  const advisorId = req.query.advisorId;
   const users = readJSON(usersFile);
 
   // Find the advisor
@@ -417,26 +418,54 @@ app.post("/twilio/voice-handler", (req, res) => {
 });
 
 /***********************************
- * ⭐ NEW — INBOUND CALL HANDLER
+ * ⭐ NEW — ADVANCED INBOUND CALL HANDLER (ROUND ROBIN)
  ***********************************/
 app.post("/twilio/inbound-call", (req, res) => {
   const twiml = new twilio.twiml.VoiceResponse();
-
-  // Greeting for inbound callers
   twiml.say(
-    "Thank you for calling Psychic Connect. Please wait while we connect you to an advisor."
+    "Thank you for calling Psychic Connect. Please wait while we connect you to an available advisor."
   );
 
   const users = readJSON(usersFile);
 
-  // For now, route all inbound calls to advisor1@example.com
-  const advisor = users.find((u) => u.userId === "advisor1@example.com");
+  // Get all advisors
+  const advisors = users.filter((u) => u.role === "advisor");
 
-  if (!advisor || !advisor.phoneNumber) {
-    twiml.say("All advisors are currently unavailable.");
-  } else {
-    twiml.dial({ callerId: TWILIO_PHONE_NUMBER }, advisor.phoneNumber);
+  // Filter for available advisors with phone numbers
+  const available = advisors.filter(
+    (a) =>
+      a.availableForPhone === true &&
+      a.inPhoneSession === false &&
+      a.phoneNumber
+  );
+
+  if (available.length === 0) {
+    twiml.say("All advisors are currently busy. Please try again later.");
+    res.type("text/xml");
+    return res.send(twiml.toString());
   }
+
+  // Read routing state (round-robin pointer)
+  let stateArr = readJSON(routingStateFile);
+  let state = stateArr[0] || { lastAdvisorId: null };
+
+  // Find index of last advisor used within the current available list
+  let lastIndex = -1;
+  if (state.lastAdvisorId) {
+    lastIndex = available.findIndex((a) => a.userId === state.lastAdvisorId);
+  }
+
+  // Compute next index in round-robin order
+  const nextIndex = (lastIndex + 1) % available.length;
+  const selectedAdvisor = available[nextIndex];
+
+  // Update routing state
+  state.lastAdvisorId = selectedAdvisor.userId;
+  stateArr[0] = state;
+  writeJSON(routingStateFile, stateArr);
+
+  // Dial the selected advisor
+  twiml.dial({ callerId: TWILIO_PHONE_NUMBER }, selectedAdvisor.phoneNumber);
 
   res.type("text/xml");
   res.send(twiml.toString());
