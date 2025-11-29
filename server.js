@@ -13,17 +13,27 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 /****************************************************
- * ⭐⭐⭐ TWILIO SETUP — from environment variables ⭐⭐⭐
+ * ⭐⭐⭐ TWILIO SETUP — from environment variables (sanitized) ⭐⭐⭐
  ****************************************************/
 const twilio = require("twilio");
 
-// Read Twilio values from environment variables (Render sets these)
-const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER; // e.g. +13053631648
+// Read & sanitize Twilio values from environment variables
+const rawAccountSid = process.env.TWILIO_ACCOUNT_SID || "";
+const rawAuthToken = process.env.TWILIO_AUTH_TOKEN || "";
+const rawFromNumber = process.env.TWILIO_PHONE_NUMBER || "";
 
-// Public URL Twilio should call back (must be HTTPS in production)
-const BASE_URL = process.env.BASE_URL || "https://twilio-voice.onrender.com";
+// Trim whitespace/newlines and convert to strings
+const TWILIO_ACCOUNT_SID = rawAccountSid.toString().trim();
+const TWILIO_AUTH_TOKEN = rawAuthToken.toString().trim();
+const TWILIO_PHONE_NUMBER = rawFromNumber.toString().trim();
+
+// sanitize BASE_URL: trim & remove trailing slashes
+const BASE_URL = (
+  process.env.BASE_URL || "https://twilio-voice-dgb2.onrender.com"
+)
+  .toString()
+  .trim()
+  .replace(/\/+$/, "");
 
 if (!TWILIO_ACCOUNT_SID || !TWILIO_AUTH_TOKEN || !TWILIO_PHONE_NUMBER) {
   console.warn(
@@ -340,23 +350,20 @@ app.post("/start-phone", async (req, res) => {
   // ---- TWILIO CALL: CALL USER FIRST ----
   let call;
   try {
+    // sanitize base URL and build callback URL safely
+    const base = (BASE_URL || "").toString().trim().replace(/\/+$/, "");
+    const callbackUrl = `${base}/twilio/voice-handler?advisorId=${encodeURIComponent(
+      advisorId
+    )}`;
+
     call = await twilioClient.calls.create({
       from: TWILIO_PHONE_NUMBER,
       to: userPhone,
-
-      // ⬇⬇⬇ use the BASE_URL env var so Twilio can reach your voice handler
-      url: `${BASE_URL}/twilio/voice-handler?advisorId=${advisorId}`,
-      // ⬆⬆⬆
+      url: callbackUrl,
     });
   } catch (err) {
     console.error("Twilio Error:", err);
-    const detail =
-      err && err.message
-        ? err.message
-        : err && err.toString
-        ? err.toString()
-        : JSON.stringify(err);
-    return res.status(500).json({ error: "Twilio call failed", detail });
+    return res.status(500).json({ error: "Twilio call failed" });
   }
 
   advisor.inPhoneSession = true;
